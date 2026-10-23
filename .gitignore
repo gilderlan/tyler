@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.DS_Store
+
+# Modelos de IA baixados e vídeos de teste não vão para o git
+models/*
+!models/.gitkeep
+samples/*
+!samples/.gitkeep
+*_tyler.*
+*_tyler_*
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.m4a
+*.mp3
