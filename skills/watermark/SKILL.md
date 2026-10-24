@@ -1,25 +1,27 @@
 ---
 name: watermark
-description: Coloca uma imagem (logo, marca d'água, selo) sobre um vídeo, em um canto ou no centro. Use quando o usuário pedir para colocar marca d'água, logo, logotipo ou assinatura visual em um vídeo.
-argument-hint: <vídeo> <imagem> [posição] [tamanho%] [opacidade]
+description: Places an image (logo, watermark, badge) over a video, in a corner or in the center. Use when the user asks to add a watermark, logo or visual signature to a video (in any language, e.g. "coloca meu logo").
+argument-hint: <video> <image> [position] [size%] [opacity]
 ---
 
 # /tyler:watermark
 
-Aplica uma marca d'água usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
+Applies a watermark with the Tyler CLI. Arguments received: `$ARGUMENTS`
 
-## Como executar
+Reply to the user in the language they wrote in. The CLI prints in Portuguese; translate what you report.
 
-1. Identifique o vídeo e a imagem. Se faltar algum, pergunte. Resolva `~` e caminhos relativos e confirme que os dois existem. PNG com fundo transparente dá o melhor resultado.
-2. Escolha a posição a partir do pedido (padrão `bottom-right`): `top-left`, `top`, `top-right`, `left`, `center`, `right`, `bottom-left`, `bottom`, `bottom-right`. "Canto inferior direito" → `bottom-right`, "em cima no meio" → `top`.
-3. Ajustes opcionais:
-   - `--size` — largura da marca em % do lado menor do vídeo (padrão 20; "pequena" ≈ 10, "grande" ≈ 35).
-   - `--opacity` — de 0.1 a 1 (padrão 1; "discreta"/"semitransparente" ≈ 0.5).
-   - `--margin` — distância da borda em % (padrão 3).
-4. Rode:
+## Steps
+
+1. Identify the video and the image. If either is missing, ask. Resolve `~` and relative paths and confirm both exist. A PNG with a transparent background gives the best result.
+2. Pick the position from the request (default `bottom-right`): `top-left`, `top`, `top-right`, `left`, `center`, `right`, `bottom-left`, `bottom`, `bottom-right`. "Lower right corner" → `bottom-right`, "top middle" → `top`.
+3. Optional tweaks:
+   - `--size` — watermark width as % of the video's shorter side (default 20; "small" ≈ 10, "large" ≈ 35).
+   - `--opacity` — from 0.1 to 1 (default 1; "subtle"/"semi-transparent" ≈ 0.5).
+   - `--margin` — distance from the edge in % (default 3).
+4. Run:
 
    ```bash
-   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler watermark "<vídeo>" "<imagem>" -p <posição> [--size N] [--opacity N] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler watermark "<video>" "<image>" -p <position> [--size N] [--opacity N] [-o "<output>"]
    ```
 
-5. A última linha impressa é o caminho do vídeo gerado; a linha `marca:` mostra o tamanho final da marca em pixels. Informe os dois ao usuário (o original nunca é alterado).
+5. The last printed line is the path of the new video; the `marca:` line shows the final watermark size in pixels. Tell the user both (the original is never changed).

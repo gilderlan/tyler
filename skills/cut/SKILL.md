@@ -1,25 +1,27 @@
 ---
 name: cut
-description: Corta um trecho de um vídeo entre dois tempos (minutagem). Use quando o usuário pedir para cortar, recortar, aparar, extrair um trecho ou pegar "do minuto X ao Y" de um vídeo.
-argument-hint: <vídeo> <início> [fim]
+description: Cuts a segment out of a video between two timestamps. Use when the user asks to cut, trim, clip, extract a segment or keep "from minute X to Y" of a video (in any language, e.g. "corta do 1:30 ao 2:45").
+argument-hint: <video> <start> [end]
 ---
 
 # /tyler:cut
 
-Corta um trecho do vídeo usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
+Cuts a segment of the video with the Tyler CLI. Arguments received: `$ARGUMENTS`
 
-## Como executar
+Reply to the user in the language they wrote in. The CLI prints in Portuguese; translate what you report.
 
-1. Identifique o vídeo de entrada. Se nenhum foi informado, pergunte qual é. Resolva `~` e caminhos relativos; confirme que o arquivo existe.
-2. Identifique o início e o fim. Formatos aceitos: segundos (`90`), `MM:SS` (`1:30`) ou `HH:MM:SS` (`1:02:03`), com fração opcional (`1:30.5`).
-   - "do 1:30 até o fim" → só o início.
-   - "os primeiros 30 segundos" → início `0`, fim `30`.
-   - "2 minutos a partir de 1:00" → calcule o fim (`3:00`).
-3. Por padrão o corte é exato (recodifica). Use `--copy` só se o usuário pedir rapidez ou "sem perder qualidade" e aceitar que o início pode adiantar alguns segundos (cai no quadro-chave anterior).
-4. Rode:
+## Steps
+
+1. Identify the input video. If none was given, ask for it. Resolve `~` and relative paths; confirm the file exists.
+2. Identify the start and end. Accepted formats: seconds (`90`), `MM:SS` (`1:30`) or `HH:MM:SS` (`1:02:03`), with optional fraction (`1:30.5`).
+   - "from 1:30 to the end" → start only.
+   - "the first 30 seconds" → start `0`, end `30`.
+   - "2 minutes starting at 1:00" → compute the end (`3:00`).
+3. The cut is frame-exact by default (re-encodes). Use `--copy` only if the user asks for speed or "no quality loss" and accepts that the start may move a few seconds earlier (it snaps to the previous keyframe).
+4. Run:
 
    ```bash
-   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler cut "<vídeo>" <início> [fim] [--copy] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler cut "<video>" <start> [end] [--copy] [-o "<output>"]
    ```
 
-5. A última linha impressa é o caminho do vídeo gerado; a linha `trecho:` diz a duração do corte. Informe os dois ao usuário (o original nunca é alterado).
+5. The last printed line is the path of the new video; the `trecho:` line gives the length of the cut. Tell the user both (the original is never changed).

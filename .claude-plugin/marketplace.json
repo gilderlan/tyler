@@ -1,6 +1,6 @@
 {
   "name": "tyler",
-  "description": "Marketplace do Tyler, editor de vídeo comandado por IA",
+  "description": "Marketplace for Tyler, an AI-driven video editor",
   "owner": {
     "name": "Gilderlan Braz"
   },
@@ -8,7 +8,7 @@
     {
       "name": "tyler",
       "source": "./",
-      "description": "Corta, deixa vertical, borra rostos e placas, aplica marca d'água e baixa vídeos."
+      "description": "Cut, make vertical (9:16), blur faces and license plates, add watermarks and download videos."
     }
   ]
 }

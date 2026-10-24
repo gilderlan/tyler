@@ -1,5 +1,7 @@
 # Tyler
 
+**English** · [Português](README.pt-BR.md)
+
 ```text
 ████████╗██╗   ██╗██╗     ███████╗██████╗
 ╚══██╔══╝╚██╗ ██╔╝██║     ██╔════╝██╔══██╗
@@ -7,165 +9,163 @@
    ██║     ╚██╔╝  ██║     ██╔══╝  ██╔══██╗
    ██║      ██║   ███████╗███████╗██║  ██║
    ╚═╝      ╚═╝   ╚══════╝╚══════╝╚═╝  ╚═╝
-  a primeira regra do Tyler: você não
-  sobrescreve o vídeo original.
+  the first rule of Tyler: you do not
+  overwrite the original video.
 ```
 
-Editor de vídeo comandado por IA: um plugin do Claude Code que roda localmente no Mac.
+AI-driven video editor: a Claude Code plugin that runs locally on your Mac.
 
-> Nome inspirado no Tyler Durden (*Clube da Luta*), o projecionista que mexia nos filmes quadro a quadro.
+> Named after Tyler Durden (*Fight Club*), the projectionist who tampered with films frame by frame.
 
-## Objetivo
+## Goal
 
-Editar vídeos pedindo em linguagem natural ao Claude Code, por exemplo:
+Edit videos by asking Claude Code in plain language, for example:
 
-- "converte esse vídeo para vertical seguindo a pessoa"
-- "borra todos os rostos e placas de carro"
-- "baixa esse vídeo do YouTube"
-- "corta do 1:30 até o 2:45"
-- "coloca meu logo no canto inferior direito"
+- "make this video vertical, following the person"
+- "blur every face and license plate"
+- "download this YouTube video"
+- "cut from 1:30 to 2:45"
+- "put my logo in the lower right corner"
 
-## Instalação
+## Installation
 
-1. Instale os programas que o Tyler usa:
+1. Install the programs Tyler relies on:
 
    ```bash
    brew install uv ffmpeg deno
    ```
 
-2. Instale o plugin no [Claude Code](https://code.claude.com):
+2. Install the plugin in [Claude Code](https://code.claude.com):
 
    ```bash
    claude plugin marketplace add https://git.gilderlan.com/Gilderlan/tyler.git
    claude plugin install tyler@tyler
    ```
 
-A primeira operação demora mais, porque o `uv` monta o ambiente Python dentro do plugin.
-Para receber versões novas: `claude plugin marketplace update tyler`.
+The first operation takes longer, because `uv` builds the Python environment inside the plugin.
+To get new versions: `claude plugin marketplace update tyler`.
 
-## Uso
+## Usage
 
-Em qualquer pasta, peça ao Claude Code em português ("deixa o video.mp4 vertical", "borra as placas do rua.mp4")
-ou chame a skill direto:
+In any folder, ask Claude Code in any language ("make video.mp4 vertical", "blur the plates in street.mp4")
+or call a skill directly:
 
-| Skill | O que faz |
+| Skill | What it does |
 |---|---|
-| `/tyler:vertical ~/Movies/video.mp4` | Horizontal → 9:16 seguindo os rostos (ou corte no centro, ou vídeo inteiro com fundo desfocado) |
-| `/tyler:blur ~/Movies/rua.mp4` | Borra rostos e/ou placas, com desfoque, mosaico ou tarja preta |
-| `/tyler:cut ~/Movies/video.mp4 1:30 2:45` | Corta um trecho entre dois tempos |
-| `/tyler:watermark ~/Movies/video.mp4 ~/logo.png` | Coloca um logo num canto ou no centro |
-| `/tyler:download <link>` | Baixa vídeo ou áudio do YouTube, Instagram, TikTok, Vimeo... |
+| `/tyler:vertical ~/Movies/video.mp4` | Horizontal → 9:16 following faces (or a center crop, or the whole frame over a blurred background) |
+| `/tyler:blur ~/Movies/street.mp4` | Blurs faces and/or plates, with blur, mosaic or black box |
+| `/tyler:cut ~/Movies/video.mp4 1:30 2:45` | Cuts a segment between two timestamps |
+| `/tyler:watermark ~/Movies/video.mp4 ~/logo.png` | Places a logo in a corner or in the center |
+| `/tyler:download <link>` | Downloads video or audio from YouTube, Instagram, TikTok, Vimeo... |
 
-Cada operação gera um arquivo novo ao lado do original (`<nome>_tyler_<operação>.<ext>`); o original nunca é alterado.
-O `download` salva com o título do vídeo e nunca sobrescreve um arquivo existente. O vídeo sai em H.264 + AAC
-quando o site oferece, o que no YouTube limita a 1080p. Baixe só vídeos seus, com licença livre ou com autorização do autor.
+Every operation writes a new file next to the original (`<name>_tyler_<operation>.<ext>`); the original is never changed.
+`download` names the file after the video title and never overwrites an existing file. Video comes out as H.264 + AAC
+when the site offers it, which caps YouTube at 1080p. Only download your own videos, freely licensed ones, or ones you
+have the author's permission for.
 
-## Arquitetura
+## Architecture
 
 ```
  Claude Code ── skills/ (/tyler:cut, /tyler:vertical, ...)
-                   │  só orquestram: chamam a CLI
+                   │  orchestration only: they call the CLI
            ┌───────▼────────┐
-           │   CLI tyler    │  src/tyler/cli.py
+           │   tyler CLI    │  src/tyler/cli.py
            └───────┬────────┘
            ┌───────▼────────┐
-           │ src/tyler/ops  │  ← lógica única de cada operação
+           │ src/tyler/ops  │  ← the single implementation of each operation
            └───────┬────────┘
           ┌────────┴────────┐
-       ffmpeg         modelos de IA
-                     (rostos, placas)
+       ffmpeg            AI models
+                     (faces, plates)
 ```
 
-Toda operação vive em `src/tyler/ops/` e é exposta pela CLI `tyler`, o motor que as skills chamam com
-`uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler <comando>`. Nenhuma lógica fica nas skills.
+Every operation lives in `src/tyler/ops/` and is exposed by the `tyler` CLI, the engine the skills call with
+`uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler <command>`. No logic lives in the skills.
 
-## Estrutura
+## Layout
 
-| Caminho | Conteúdo |
+| Path | Contents |
 |---|---|
-| `src/tyler/` | Biblioteca Python e CLI |
-| `src/tyler/ops/` | Uma operação por módulo (reframe, blur, ...) |
-| `skills/` | Skills do Claude Code (`/tyler:vertical`, `/tyler:blur`, ...) |
-| `.claude-plugin/` | Manifesto do plugin e do marketplace |
-| `models/` | Modelos de IA baixados (fora do git) |
-| `samples/` | Vídeos de teste (fora do git) |
-| `tests/` | Testes |
+| `src/tyler/` | Python library and CLI |
+| `src/tyler/ops/` | One operation per module (vertical, blur, ...) |
+| `skills/` | Claude Code skills (`/tyler:vertical`, `/tyler:blur`, ...) |
+| `.claude-plugin/` | Plugin and marketplace manifests |
+| `models/` | Downloaded AI models (not in git) |
+| `samples/` | Test videos (not in git) |
+| `tests/` | Tests |
 
-## Desenvolvimento
+## Development
 
-Carregue o plugin direto desta pasta, sem instalar: `claude --plugin-dir .` (depois de editar uma skill,
-`/reload-plugins`). Antes de publicar, rode `claude plugin validate .`. Testes: `uv run pytest`.
+Load the plugin straight from this folder, without installing it: `claude --plugin-dir .` (after editing a skill,
+run `/reload-plugins`). Before publishing, run `claude plugin validate .`. Tests: `uv run pytest`.
 
-Requisitos: macOS (Apple Silicon), [uv](https://docs.astral.sh/uv/) com Python 3.12, ffmpeg e deno
-(usado pelo yt-dlp para baixar do YouTube). Se faltar algum, o Tyler avisa e diz como instalar.
+Requirements: macOS (Apple Silicon), [uv](https://docs.astral.sh/uv/) with Python 3.12, ffmpeg and deno
+(used by yt-dlp to download from YouTube). If any is missing, Tyler says so and how to install it.
 
 ### CLI
 
-As skills chamam a CLI, que também pode ser usada direto para testar uma operação:
+The skills call the CLI, which you can also run directly to test an operation. Its messages are in Portuguese.
 
 ```bash
 uv sync
 uv run tyler --help
 
-# horizontal → vertical seguindo os rostos
+# horizontal → vertical following faces
 uv run tyler vertical video.mp4
-# corte fixo no centro / vídeo inteiro com fundo desfocado
+# fixed center crop / whole frame over a blurred background
 uv run tyler vertical video.mp4 --mode center
 uv run tyler vertical video.mp4 --mode fit
 
-# borra rostos e placas (ou só um deles) com desfoque, mosaico ou tarja preta
+# blur faces and plates (or just one of them) with blur, mosaic or black box
 uv run tyler blur video.mp4
 uv run tyler blur video.mp4 --targets plates --style pixel
 
-# corta um trecho: segundos, MM:SS ou HH:MM:SS; sem o fim, vai até o final
+# cut a segment: seconds, MM:SS or HH:MM:SS; without an end, goes to the end of the video
 uv run tyler cut video.mp4 1:30 2:45
-uv run tyler cut video.mp4 1:30 --copy   # instantâneo, sem recodificar (início no quadro-chave anterior)
+uv run tyler cut video.mp4 1:30 --copy   # instant, no re-encoding (starts at the previous keyframe)
 
-# marca d'água: posição, tamanho (% do lado menor do vídeo) e opacidade
-uv run tyler watermark video.mp4 logo.png                      # canto inferior direito, 20%
+# watermark: position, size (% of the video's shorter side) and opacity
+uv run tyler watermark video.mp4 logo.png                      # lower right corner, 20%
 uv run tyler watermark video.mp4 logo.png -p top-left --size 10 --opacity 0.6
 
-# baixa do YouTube (e Instagram, TikTok, Vimeo...): vídeo em mp4 ou só o áudio
+# download from YouTube (and Instagram, TikTok, Vimeo...): mp4 video or audio only
 uv run tyler download https://www.youtube.com/watch?v=jNQXAC9IVRw
-uv run tyler download --only-audio <link>                      # m4a, sem recodificar
-uv run tyler download --only-audio --audio-format mp3 <link> -o musicas/
+uv run tyler download --only-audio <link>                      # m4a, no re-encoding
+uv run tyler download --only-audio --audio-format mp3 <link> -o music/
 ```
 
-O `download` usa o [yt-dlp](https://github.com/yt-dlp/yt-dlp), salva com o título do vídeo na pasta atual
-(ou no arquivo/pasta de `-o`) e nunca sobrescreve um arquivo existente. O vídeo sai em H.264 + AAC quando o site
-oferece, o que no YouTube limita a 1080p. Baixe só vídeos seus, com licença livre ou com autorização do autor.
+`download` uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) and saves to the current folder (or the file/folder given
+in `-o`).
 
-No terminal, a CLI mostra um painel ao vivo com as etapas, a barra de progresso, o tempo restante,
-as estatísticas (rostos, placas, cortes de cena) e uma miniatura do quadro que está sendo analisado,
-com as detecções desenhadas. Use `--no-preview` para esconder a miniatura e `--plain` para saída em texto simples
-(que também é usada automaticamente quando a saída não é um terminal, por exemplo nas skills).
-Ctrl+C cancela e apaga o vídeo incompleto.
+In a terminal, the CLI shows a live panel with the steps, progress bar, time left, stats (faces, plates, scene cuts)
+and a thumbnail of the frame being analyzed with the detections drawn on it. Use `--no-preview` to hide the thumbnail
+and `--plain` for plain text output (used automatically when the output isn't a terminal, as in the skills).
+Ctrl+C cancels and deletes the incomplete video.
 
-No rodapé do painel aparecem o uso de CPU e RAM (do Tyler e dos ffmpeg que ele abre), o estado térmico do Mac,
-os modelos de IA em uso (inferências e tempo médio) e o comando que está rodando. `--no-stats` esconde o rodapé.
+The panel footer shows CPU and RAM usage (Tyler plus the ffmpeg processes it starts), the Mac's thermal state,
+the AI models in use (inferences and average time) and the command being run. `--no-stats` hides the footer.
 
-Para esquentar menos, use `--eco`: o Tyler e o ffmpeg passam a rodar em segundo plano, nos núcleos de eficiência.
-Fica cerca de 3x mais lento.
+To run cooler, use `--eco`: Tyler and ffmpeg run in the background on the efficiency cores. It is about 3x slower.
 
-## Modelos de IA
+## AI models
 
-| Uso | Modelo | Onde fica |
+| Use | Model | Location |
 |---|---|---|
-| Rostos | YuNet (OpenCV Zoo) | `models/` |
-| Placas | YOLOv9 do [open-image-models](https://github.com/ankandrew/open-image-models) | `~/.cache/open-image-models/` |
+| Faces | YuNet (OpenCV Zoo) | `models/` |
+| Plates | YOLOv9 from [open-image-models](https://github.com/ankandrew/open-image-models) | `~/.cache/open-image-models/` |
 
-São baixados automaticamente no primeiro uso.
+They are downloaded automatically on first use.
 
 ## Roadmap
 
-- [x] `vertical` — horizontal → 9:16 com enquadramento inteligente
-- [x] `blur` — blur automático de rostos e placas
-- [x] `cut` — corta um trecho entre dois tempos
-- [x] `watermark` — marca d'água com imagem
-- [x] `download` — baixa vídeo ou áudio do YouTube e outros sites
-- [ ] Ações Rápidas no Finder
-- [ ] Interface web
+- [x] `vertical` — horizontal → 9:16 with smart framing
+- [x] `blur` — automatic blurring of faces and plates
+- [x] `cut` — cut a segment between two timestamps
+- [x] `watermark` — image watermark
+- [x] `download` — download video or audio from YouTube and other sites
+- [ ] Finder Quick Actions
+- [ ] Web interface
 
-## Licença
+## License
 
 [MIT](LICENSE) © 2026 Gilderlan Braz

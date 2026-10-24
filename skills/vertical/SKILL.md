@@ -1,25 +1,27 @@
 ---
 name: vertical
-description: Converte um vídeo horizontal para vertical (9:16, Reels/TikTok/Shorts), seguindo os rostos automaticamente. Use quando o usuário pedir para deixar um vídeo vertical, em pé, 9:16, para stories/reels/tiktok/shorts.
-argument-hint: <vídeo> [auto|center|fit] [LARGURAxALTURA]
+description: Converts a horizontal video to vertical (9:16 for Reels, TikTok, Shorts, Stories), automatically following faces. Use when the user asks to make a video vertical, portrait, 9:16, or ready for reels/tiktok/shorts/stories (in any language, e.g. "deixa vertical").
+argument-hint: <video> [auto|center|fit] [WIDTHxHEIGHT]
 ---
 
 # /tyler:vertical
 
-Converte o vídeo para vertical usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
+Converts the video to vertical with the Tyler CLI. Arguments received: `$ARGUMENTS`
 
-## Como executar
+Reply to the user in the language they wrote in. The CLI prints in Portuguese; translate what you report.
 
-1. Identifique o vídeo de entrada. Se nenhum foi informado, pergunte qual é. Se o caminho tiver `~` ou for relativo, resolva-o; confirme que o arquivo existe.
-2. Escolha o modo a partir do pedido (padrão `auto`):
-   - `auto` — recorta 9:16 seguindo os rostos (pessoas falando, entrevistas, vlogs).
-   - `center` — recorte fixo no centro (assunto sempre no meio, sem pessoas).
-   - `fit` — mostra o quadro inteiro com fundo desfocado (paisagens, telas, quando nada pode ser cortado).
-3. Rode a partir da raiz deste projeto (pode levar alguns minutos em vídeos longos; use timeout alto):
+## Steps
+
+1. Identify the input video. If none was given, ask for it. Resolve `~` and relative paths; confirm the file exists.
+2. Pick the mode from the request (default `auto`):
+   - `auto` — 9:16 crop that follows faces (people talking, interviews, vlogs).
+   - `center` — fixed crop in the center (subject always in the middle, no people).
+   - `fit` — shows the whole frame over a blurred background (landscapes, screen recordings, when nothing can be cropped out).
+3. Run (long videos can take a few minutes; use a high timeout):
 
    ```bash
-   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler vertical "<vídeo>" --mode <modo> [--size 1080x1920] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler vertical "<video>" --mode <mode> [--size 1080x1920] [-o "<output>"]
    ```
 
-4. A última linha impressa é o caminho do vídeo gerado. Informe-o ao usuário (o original nunca é alterado).
-5. Se falhar, mostre o erro e sugira o modo `fit` ou `center` como alternativa quando o problema for a detecção de rostos.
+4. The last printed line is the path of the new video. Tell the user (the original is never changed).
+5. If it fails, show the error and suggest `fit` or `center` as an alternative when the problem is face detection.

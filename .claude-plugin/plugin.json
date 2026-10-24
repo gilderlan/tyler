@@ -2,7 +2,7 @@
   "name": "tyler",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "Editor de vídeo comandado por IA: corta, deixa vertical, borra rostos e placas, aplica marca d'água e baixa vídeos.",
+  "description": "AI-driven video editor: cut, make vertical (9:16), blur faces and license plates, add watermarks and download videos. Runs locally on macOS.",
   "author": {
     "name": "Gilderlan Braz"
   }

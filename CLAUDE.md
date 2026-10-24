@@ -10,4 +10,4 @@ Editor de vídeo comandado por IA. Veja a arquitetura no README.md.
 - Use ffmpeg para codificação/decodificação; preserve o áudio original sempre que possível.
 - Nunca sobrescreva o vídeo de entrada: a saída padrão é `<nome>_tyler_<operacao>.<ext>` ao lado do original.
 - Python 3.12 gerenciado com `uv` (o Python 3.14 do sistema ainda não é suportado por várias libs de IA).
-- Textos para o usuário, mensagens da CLI e documentação em português.
+- Idiomas: skills (`skills/`), manifestos (`.claude-plugin/`) e `README.md` em inglês, para quem instala o plugin; as skills mandam o Claude responder no idioma do usuário. Mensagens da CLI, comentários e `README.pt-BR.md` em português. Ao mudar o README, atualize as duas versões. Se mudar um rótulo que a CLI imprime (ex.: `trecho:`), atualize as skills que o citam.

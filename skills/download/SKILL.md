@@ -1,26 +1,28 @@
 ---
 name: download
-description: Baixa um vídeo (mp4) ou só o áudio (m4a/mp3) do YouTube e de outros sites (Instagram, TikTok, Vimeo...). Use quando o usuário pedir para baixar, salvar ou pegar um vídeo ou áudio a partir de um link.
-argument-hint: <link> [áudio] [mp3] [pasta ou arquivo de saída]
+description: Downloads a video (mp4) or just the audio (m4a/mp3) from YouTube and other sites (Instagram, TikTok, Facebook, Vimeo...). Use when the user asks to download, save or grab a video or audio from a link (in any language, e.g. "baixa esse vídeo").
+argument-hint: <link> [audio] [mp3] [output folder or file]
 ---
 
 # /tyler:download
 
-Baixa vídeo ou áudio usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
+Downloads video or audio with the Tyler CLI. Arguments received: `$ARGUMENTS`
 
-## Como executar
+Reply to the user in the language they wrote in. The CLI prints in Portuguese; translate what you report.
 
-1. Identifique o link. Se nenhum foi informado, pergunte qual é. Se for link de playlist, peça o link de um vídeo só.
-2. Decida o que baixar a partir do pedido:
-   - vídeo (padrão) — mp4, pronto para as outras operações do Tyler.
-   - só o áudio (`--only-audio`) — m4a, sem perder qualidade. Use `--audio-format mp3` só se o usuário pedir mp3.
-3. Destino: se o usuário indicar uma pasta ou arquivo, passe em `-o` (pasta terminada em `/`). Sem isso, o arquivo vai para a pasta atual com o título do vídeo.
-4. Rode:
+## Steps
+
+1. Identify the link. If none was given, ask for it. If it is a playlist link, ask for a single video link.
+2. Decide what to download from the request:
+   - video (default) — mp4, ready for Tyler's other operations.
+   - audio only (`--only-audio`) — m4a, no quality loss. Use `--audio-format mp3` only if the user asks for mp3.
+3. Destination: if the user names a folder or file, pass it in `-o` (folders end with `/`). Otherwise the file goes to the current folder, named after the video title.
+4. Run:
 
    ```bash
-   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler download "<link>" [--only-audio] [--audio-format mp3] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler download "<link>" [--only-audio] [--audio-format mp3] [-o "<output>"]
    ```
 
-5. A última linha impressa é o caminho do arquivo baixado. Informe ao usuário. Se aparecer `arquivo: já existia`, avise que nada foi baixado de novo (o Tyler nunca sobrescreve).
-6. Se o download falhar por restrição de idade ou login, explique que o vídeo exige uma conta e não pode ser baixado assim.
-7. Se for vídeo, ofereça os próximos passos: `/tyler:vertical` ou `/tyler:blur` sobre o arquivo baixado.
+5. The last printed line is the path of the downloaded file. Tell the user. If `arquivo: já existia` appears, say nothing was downloaded again (Tyler never overwrites files).
+6. If the download fails because of age restriction or login, explain that the video requires an account and can't be downloaded this way.
+7. For a video, offer next steps: `/tyler:vertical` or `/tyler:blur` on the downloaded file.

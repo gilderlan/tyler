@@ -1,29 +1,31 @@
 ---
 name: blur
-description: Anonimiza um vídeo borrando automaticamente rostos e/ou placas de veículos. Use quando o usuário pedir para borrar, desfocar, censurar, esconder ou anonimizar rostos, pessoas, placas ou carros em um vídeo.
-argument-hint: <vídeo> [all|faces|plates] [blur|pixel|black]
+description: Anonymizes a video by automatically blurring faces and/or vehicle license plates. Use when the user asks to blur, pixelate, censor, hide or anonymize faces, people, plates or cars in a video (in any language, e.g. "borra os rostos").
+argument-hint: <video> [all|faces|plates] [blur|pixel|black]
 ---
 
 # /tyler:blur
 
-Borra rostos e placas usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
+Blurs faces and plates with the Tyler CLI. Arguments received: `$ARGUMENTS`
 
-## Como executar
+Reply to the user in the language they wrote in. The CLI prints in Portuguese; translate what you report.
 
-1. Identifique o vídeo de entrada. Se nenhum foi informado, pergunte qual é. Resolva `~` e caminhos relativos; confirme que o arquivo existe.
-2. Escolha o alvo a partir do pedido (padrão `all`):
-   - `all` — rostos e placas
-   - `faces` — só rostos
-   - `plates` — só placas
-3. Escolha o estilo (padrão `blur`):
-   - `blur` — desfoque
-   - `pixel` — mosaico/pixelado
-   - `black` — tarja preta
-4. Rode (leva cerca de 2x a duração do vídeo; use timeout alto ou rode em segundo plano para vídeos longos):
+## Steps
+
+1. Identify the input video. If none was given, ask for it. Resolve `~` and relative paths; confirm the file exists.
+2. Pick the target from the request (default `all`):
+   - `all` — faces and plates
+   - `faces` — faces only
+   - `plates` — plates only
+3. Pick the style (default `blur`):
+   - `blur` — soft blur
+   - `pixel` — mosaic/pixelated
+   - `black` — black box
+4. Run (takes about 2x the video length; use a high timeout or run in the background for long videos):
 
    ```bash
-   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler blur "<vídeo>" --targets <alvo> --style <estilo> [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler blur "<video>" --targets <target> --style <style> [-o "<output>"]
    ```
 
-5. A última linha impressa é o caminho do vídeo gerado; a anterior diz em quantos quadros algo foi encontrado. Informe os dois ao usuário (o original nunca é alterado).
-6. Lembre o usuário de assistir ao resultado antes de publicar: a detecção é automática e pode deixar escapar rostos de perfil, muito pequenos ou parcialmente cobertos.
+5. The last printed line is the path of the new video; the `quadros com rosto:` and `quadros com placa:` lines say in how many frames faces and plates were found. Tell the user both (the original is never changed).
+6. Remind the user to watch the result before publishing: detection is automatic and can miss faces in profile, very small ones or partly covered ones.
