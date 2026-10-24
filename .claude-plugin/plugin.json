@@ -2,7 +2,7 @@
   "name": "tyler",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "AI-driven video editor: cut, make vertical (9:16), blur faces and license plates, add watermarks and download videos. Runs locally on macOS.",
+  "description": "AI-driven video editor: cut, make vertical (9:16), blur faces and license plates, add watermarks and download videos. Runs locally on macOS and Linux.",
   "author": {
     "name": "Gilderlan Braz"
   }

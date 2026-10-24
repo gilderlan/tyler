@@ -1,10 +1,11 @@
-"""Uso de recursos do Mac (CPU, RAM, temperatura) e modo econômico."""
+"""Uso de recursos do computador (CPU, RAM, temperatura do Mac), modo econômico e programas necessários."""
 
 import ctypes
 import ctypes.util
 import os
 import shutil
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
 
@@ -18,7 +19,11 @@ ECO = False
 THERMAL_STATES = ("normal", "morno", "quente", "crítico")  # NSProcessInfoThermalState 0..3
 
 VIDEO_TOOLS = ("ffmpeg", "ffprobe")
-_PACKAGES = {"ffmpeg": "ffmpeg", "ffprobe": "ffmpeg", "deno": "deno"}  # programa -> pacote do Homebrew
+_PACKAGES = {"ffmpeg": "ffmpeg", "ffprobe": "ffmpeg", "deno": "deno"}  # programa -> pacote que o instala
+# Linux: gerenciadores de pacotes, na ordem em que são procurados
+_LINUX_INSTALLERS = (("apt-get", "sudo apt install"), ("dnf", "sudo dnf install"), ("pacman", "sudo pacman -S"),
+                     ("zypper", "sudo zypper install"))
+DENO_INSTALL = "curl -fsSL https://deno.land/install.sh | sh"  # o deno não está nos repositórios das distribuições
 
 
 class MissingTool(RuntimeError):
@@ -34,7 +39,23 @@ def require(*programs: str, purpose: str = "") -> None:
     names = " e ".join(f"do {p}" for p in packages)
     verb = "está instalado" if len(packages) == 1 else "estão instalados"
     prefix = f"Para {purpose}, o Tyler" if purpose else "O Tyler"
-    raise MissingTool(f"{prefix} precisa {names}, que não {verb}. Instale com: brew install {' '.join(packages)}")
+    raise MissingTool(f"{prefix} precisa {names}, que não {verb}. Instale com: {install_hint(packages)}")
+
+
+def install_hint(packages: list[str]) -> str:
+    """Comando que instala os pacotes neste sistema: Homebrew no Mac, o gerenciador da distribuição no Linux."""
+    if sys.platform == "darwin":
+        return f"brew install {' '.join(packages)}"
+    hints = []
+    distro = [p for p in packages if p != "deno"]
+    if distro:
+        installer = next((cmd for tool, cmd in _LINUX_INSTALLERS if shutil.which(tool)), None)
+        packages_text = " ".join(distro)
+        hints.append(f"{installer} {packages_text}" if installer
+                     else f"o gerenciador de pacotes do seu sistema ({packages_text})")
+    if "deno" in packages:
+        hints.append(DENO_INSTALL)
+    return " e ".join(hints)
 
 
 @dataclass

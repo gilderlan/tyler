@@ -44,9 +44,11 @@ def run(url: str, output: Path | str | None = None, only_audio: bool = False, au
     """
     if audio_format not in AUDIO_FORMATS:
         raise ValueError(f"Formato de áudio inválido: {audio_format}. Use um de: {', '.join(AUDIO_FORMATS)}")
-    system.require("ffmpeg")  # juntar as faixas e converter para mp3
+    # ffmpeg: juntar as faixas e converter para mp3; deno: o yt-dlp resolve o JavaScript do YouTube com ele
     if YOUTUBE.match(url):
-        system.require("deno", purpose="baixar do YouTube")  # o yt-dlp resolve o JavaScript do YouTube com ele
+        system.require("ffmpeg", "deno", purpose="baixar do YouTube")
+    else:
+        system.require("ffmpeg")
     reporter = reporter or PlainReporter()
     progress = _Progress(reporter, audio_format)
     opts = options(output, only_audio, audio_format)

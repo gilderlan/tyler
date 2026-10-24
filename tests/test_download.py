@@ -92,6 +92,15 @@ def test_download_only_audio_m4a(online, tmp_path):
 
 def test_youtube_needs_deno(monkeypatch):
     from tyler import system
+    monkeypatch.setattr(system.sys, "platform", "darwin")
     monkeypatch.setattr(system.shutil, "which", lambda p: None if p == "deno" else f"/bin/{p}")
     with pytest.raises(system.MissingTool, match="Para baixar do YouTube.*brew install deno"):
+        download.run("https://youtu.be/jNQXAC9IVRw")
+
+
+def test_youtube_lists_ffmpeg_and_deno_together(monkeypatch):
+    from tyler import system
+    monkeypatch.setattr(system.sys, "platform", "darwin")
+    monkeypatch.setattr(system.shutil, "which", lambda p: None)
+    with pytest.raises(system.MissingTool, match="precisa do ffmpeg e do deno.*brew install ffmpeg deno"):
         download.run("https://youtu.be/jNQXAC9IVRw")

@@ -13,7 +13,7 @@
   overwrite the original video.
 ```
 
-AI-driven video editor: a Claude Code plugin that runs locally on your Mac.
+AI-driven video editor: a Claude Code plugin that runs locally on macOS and Linux.
 
 > Named after Tyler Durden (*Fight Club*), the projectionist who tampered with films frame by frame.
 
@@ -29,11 +29,25 @@ Edit videos by asking Claude Code in plain language, for example:
 
 ## Installation
 
-1. Install the programs Tyler relies on:
+1. Install the programs Tyler relies on: uv, ffmpeg (version 7 or newer recommended) and deno.
+
+   macOS:
 
    ```bash
    brew install uv ffmpeg deno
    ```
+
+   Linux (Debian/Ubuntu; on other distributions, use their package manager for ffmpeg):
+
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   sudo apt install ffmpeg
+   curl -fsSL https://deno.land/install.sh | sh
+   ```
+
+   Some distributions ship an older ffmpeg (Debian 12 has 5.1, Ubuntu 24.04 has 6.1). It works, but quick cuts
+   (`--copy`) can come out a few tenths of a second longer. For ffmpeg 7 there, use a
+   [static build](https://johnvansickle.com/ffmpeg/).
 
 2. Install the plugin in [Claude Code](https://code.claude.com):
 
@@ -99,8 +113,8 @@ Every operation lives in `src/tyler/ops/` and is exposed by the `tyler` CLI, the
 Load the plugin straight from this folder, without installing it: `claude --plugin-dir .` (after editing a skill,
 run `/reload-plugins`). Before publishing, run `claude plugin validate .`. Tests: `uv run pytest`.
 
-Requirements: macOS (Apple Silicon), [uv](https://docs.astral.sh/uv/) with Python 3.12, ffmpeg and deno
-(used by yt-dlp to download from YouTube). If any is missing, Tyler says so and how to install it.
+Requirements: macOS (Apple Silicon) or Linux, [uv](https://docs.astral.sh/uv/) with Python 3.12,
+ffmpeg 7 or newer and deno (used by yt-dlp to download from YouTube). If any is missing, Tyler says so and how to install it.
 
 ### CLI
 
@@ -142,10 +156,11 @@ and a thumbnail of the frame being analyzed with the detections drawn on it. Use
 and `--plain` for plain text output (used automatically when the output isn't a terminal, as in the skills).
 Ctrl+C cancels and deletes the incomplete video.
 
-The panel footer shows CPU and RAM usage (Tyler plus the ffmpeg processes it starts), the Mac's thermal state,
+The panel footer shows CPU and RAM usage (Tyler plus the ffmpeg processes it starts), the Mac's thermal state (macOS only),
 the AI models in use (inferences and average time) and the command being run. `--no-stats` hides the footer.
 
-To run cooler, use `--eco`: Tyler and ffmpeg run in the background on the efficiency cores. It is about 3x slower.
+To run cooler, use `--eco`: Tyler and ffmpeg run in the background on the efficiency cores (on Linux, at lower
+priority). It is about 3x slower.
 
 ## AI models
 
@@ -154,7 +169,8 @@ To run cooler, use `--eco`: Tyler and ffmpeg run in the background on the effici
 | Faces | YuNet (OpenCV Zoo) | `models/` |
 | Plates | YOLOv9 from [open-image-models](https://github.com/ankandrew/open-image-models) | `~/.cache/open-image-models/` |
 
-They are downloaded automatically on first use.
+They are downloaded automatically on first use. On Apple chips the plate model runs on CoreML, about 6x faster;
+on Linux it runs on the CPU, so blurring plates takes longer.
 
 ## Roadmap
 
