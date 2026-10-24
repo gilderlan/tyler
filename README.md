@@ -52,7 +52,7 @@ Edit videos by asking Claude Code in plain language, for example:
 2. Install the plugin in [Claude Code](https://code.claude.com):
 
    ```bash
-   claude plugin marketplace add https://git.gilderlan.com/Gilderlan/tyler.git
+   claude plugin marketplace add gilderlan/tyler
    claude plugin install tyler@tyler
    ```
 
@@ -181,6 +181,52 @@ on Linux it runs on the CPU, so blurring plates takes longer.
 - [x] `download` — download video or audio from YouTube and other sites
 - [ ] Finder Quick Actions
 - [ ] Web interface
+
+## Contributing
+
+Contributions are welcome: bug fixes, new operations, better skills or translations.
+
+**Getting started** (with uv, ffmpeg and deno installed, as in [Installation](#installation)):
+
+```bash
+git clone https://github.com/gilderlan/tyler.git
+cd tyler
+uv sync
+uv run pytest
+claude --plugin-dir .   # Claude Code with your local copy of the plugin
+```
+
+**Project rules** (also in `CLAUDE.md`, which Claude Code reads automatically):
+
+- Video logic lives only in `src/tyler/ops/`, one module per operation, exposed as a `tyler` CLI subcommand.
+  Skills only orchestrate: they call the CLI and never reimplement logic.
+- Operations never print directly: they receive a `Reporter` (`src/tyler/report.py`) and report steps, stats
+  and previews through it.
+- Use ffmpeg for encoding and decoding, keep the original audio whenever possible, and never overwrite the input:
+  the default output is `<name>_tyler_<operation>.<ext>` next to the original.
+- If the operation needs a system program, check for it with `system.require()` at the start, so a missing
+  program becomes a clear message instead of a traceback.
+- Languages: skills, manifests and `README.md` in English; CLI messages, code comments and `README.pt-BR.md` in
+  Portuguese. When you change the README, update both versions.
+
+**Adding an operation**
+
+1. Create `src/tyler/ops/<operation>.py` with a `run(...)` function that receives a `Reporter`.
+2. Add the subcommand in `src/tyler/cli.py`.
+3. Write tests in `tests/test_<operation>.py`, generating small test videos with ffmpeg (see `tests/test_cut.py`).
+4. Create `skills/<operation>/SKILL.md` calling `uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler <operation>`.
+5. Document it in both READMEs.
+
+**Before opening a pull request**
+
+- `uv run pytest` passes. Download tests need internet access and are skipped without it. The plate test with a real
+  photo needs `samples/car.png` (any photo of a car with a visible plate; it isn't in git) and is skipped without it.
+- `claude plugin validate .` passes.
+- You tried the change in Claude Code with `claude --plugin-dir .`.
+- One subject per pull request, describing what changed and how you tested it.
+
+**Reporting a bug:** [open an issue](https://github.com/gilderlan/tyler/issues) with your system (macOS or Linux distribution), the output of
+`ffmpeg -version | head -1`, the command or request you made, and the full error message.
 
 ## License
 
