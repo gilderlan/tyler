@@ -4,7 +4,7 @@ description: Anonimiza um vídeo borrando automaticamente rostos e/ou placas de 
 argument-hint: <vídeo> [all|faces|plates] [blur|pixel|black]
 ---
 
-# /blur
+# /tyler:blur
 
 Borra rostos e placas usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
 
@@ -22,7 +22,7 @@ Borra rostos e placas usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
 4. Rode (leva cerca de 2x a duração do vídeo; use timeout alto ou rode em segundo plano para vídeos longos):
 
    ```bash
-   uv run --project "$CLAUDE_PROJECT_DIR" tyler blur "<vídeo>" --targets <alvo> --style <estilo> [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler blur "<vídeo>" --targets <alvo> --style <estilo> [-o "<saída>"]
    ```
 
 5. A última linha impressa é o caminho do vídeo gerado; a anterior diz em quantos quadros algo foi encontrado. Informe os dois ao usuário (o original nunca é alterado).

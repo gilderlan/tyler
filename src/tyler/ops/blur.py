@@ -36,6 +36,7 @@ Box = tuple[int, int, int, int, str]
 
 def run(input_path: Path, output: Path | None = None, targets: str = "all", style: str = "blur",
         reporter: Reporter | None = None) -> Path:
+    system.require(*system.VIDEO_TOOLS)
     if targets not in TARGETS:
         raise ValueError(f"Alvo inválido: {targets}. Use um de: {', '.join(TARGETS)}")
     if style not in STYLES:

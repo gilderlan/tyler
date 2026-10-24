@@ -40,7 +40,8 @@ def _reporter(args: argparse.Namespace) -> Reporter:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="tyler", description="Editor de vídeo comandado por IA.")
+    parser = argparse.ArgumentParser(prog="tyler", description="Editor de vídeo comandado por IA. "
+                                     "Sem comando, abre o modo conversa: peça as edições em português.")
     parser.add_argument("--version", action="version", version=f"tyler {__version__}")
     sub = parser.add_subparsers(dest="command", title="comandos")
 
@@ -95,7 +96,8 @@ def main() -> None:
 
     args = parser.parse_args()
     if args.command is None:
-        parser.print_help()
+        from tyler import agent  # importa o SDK da Anthropic só no modo conversa
+        agent.main()
         return
 
     if args.command == "download":
@@ -132,7 +134,7 @@ def main() -> None:
             partial.unlink(missing_ok=True)
         print("\nCancelado. Nenhum arquivo foi gerado.", file=sys.stderr)
         sys.exit(130)
-    except (download.DownloadFailed, cut.InvalidRange, watermark.InvalidWatermark) as e:
+    except (download.DownloadFailed, cut.InvalidRange, watermark.InvalidWatermark, system.MissingTool) as e:
         if partial:
             partial.unlink(missing_ok=True)
         sys.exit(str(e))

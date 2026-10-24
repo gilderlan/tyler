@@ -8,6 +8,7 @@ cai no quadro-chave mais próximo antes do tempo pedido (pode adiantar alguns se
 import re
 from pathlib import Path
 
+from tyler import system
 from tyler.report import PlainReporter, Reporter, shell_command
 from tyler.video import default_output, encode_args, probe, run_ffmpeg
 
@@ -42,6 +43,7 @@ def format_time(seconds: float) -> str:
 
 def run(input_path: Path, output: Path | None = None, start: float = 0.0, end: float | None = None,
         copy: bool = False, reporter: Reporter | None = None) -> Path:
+    system.require(*system.VIDEO_TOOLS)
     output = output or default_output(input_path, "cut")
     reporter = reporter or PlainReporter()
     info = probe(input_path)

@@ -88,3 +88,10 @@ def test_download_only_audio_m4a(online, tmp_path):
     path = online(ZOO, tmp_path / "zoo", only_audio=True)
     assert path == tmp_path / "zoo.m4a"
     assert not any(p.suffix == ".part" for p in tmp_path.iterdir())
+
+
+def test_youtube_needs_deno(monkeypatch):
+    from tyler import system
+    monkeypatch.setattr(system.shutil, "which", lambda p: None if p == "deno" else f"/bin/{p}")
+    with pytest.raises(system.MissingTool, match="Para baixar do YouTube.*brew install deno"):
+        download.run("https://youtu.be/jNQXAC9IVRw")

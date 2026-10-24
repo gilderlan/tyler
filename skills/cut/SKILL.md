@@ -4,7 +4,7 @@ description: Corta um trecho de um vídeo entre dois tempos (minutagem). Use qua
 argument-hint: <vídeo> <início> [fim]
 ---
 
-# /cut
+# /tyler:cut
 
 Corta um trecho do vídeo usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
 
@@ -19,7 +19,7 @@ Corta um trecho do vídeo usando a CLI do Tyler. Argumentos recebidos: `$ARGUMEN
 4. Rode:
 
    ```bash
-   uv run --project "$CLAUDE_PROJECT_DIR" tyler cut "<vídeo>" <início> [fim] [--copy] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler cut "<vídeo>" <início> [fim] [--copy] [-o "<saída>"]
    ```
 
 5. A última linha impressa é o caminho do vídeo gerado; a linha `trecho:` diz a duração do corte. Informe os dois ao usuário (o original nunca é alterado).

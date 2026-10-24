@@ -4,7 +4,7 @@ description: Coloca uma imagem (logo, marca d'água, selo) sobre um vídeo, em u
 argument-hint: <vídeo> <imagem> [posição] [tamanho%] [opacidade]
 ---
 
-# /watermark
+# /tyler:watermark
 
 Aplica uma marca d'água usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
 
@@ -19,7 +19,7 @@ Aplica uma marca d'água usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENT
 4. Rode:
 
    ```bash
-   uv run --project "$CLAUDE_PROJECT_DIR" tyler watermark "<vídeo>" "<imagem>" -p <posição> [--size N] [--opacity N] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler watermark "<vídeo>" "<imagem>" -p <posição> [--size N] [--opacity N] [-o "<saída>"]
    ```
 
 5. A última linha impressa é o caminho do vídeo gerado; a linha `marca:` mostra o tamanho final da marca em pixels. Informe os dois ao usuário (o original nunca é alterado).

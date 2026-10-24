@@ -3,6 +3,7 @@
 import ctypes
 import ctypes.util
 import os
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass
@@ -15,6 +16,25 @@ THREADS: int | None = None
 ECO = False
 
 THERMAL_STATES = ("normal", "morno", "quente", "crítico")  # NSProcessInfoThermalState 0..3
+
+VIDEO_TOOLS = ("ffmpeg", "ffprobe")
+_PACKAGES = {"ffmpeg": "ffmpeg", "ffprobe": "ffmpeg", "deno": "deno"}  # programa -> pacote do Homebrew
+
+
+class MissingTool(RuntimeError):
+    """Programa do sistema que o Tyler usa e não está instalado, com instrução de instalação para o usuário."""
+
+
+def require(*programs: str, purpose: str = "") -> None:
+    """Falha com MissingTool se algum programa não estiver no PATH, antes de a operação começar."""
+    missing = [p for p in programs if shutil.which(p) is None]
+    if not missing:
+        return
+    packages = list(dict.fromkeys(_PACKAGES.get(p, p) for p in missing))
+    names = " e ".join(f"do {p}" for p in packages)
+    verb = "está instalado" if len(packages) == 1 else "estão instalados"
+    prefix = f"Para {purpose}, o Tyler" if purpose else "O Tyler"
+    raise MissingTool(f"{prefix} precisa {names}, que não {verb}. Instale com: brew install {' '.join(packages)}")
 
 
 @dataclass

@@ -18,7 +18,7 @@ Editar vídeos dando comandos em linguagem natural, por exemplo:
 
 ```
 ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐
-│ Skills (/cmd)│  │  CLI tyler   │  │ Web UI (futuro)  │
+│ Skills (/cmd)│  │ CLI + agente │  │ Web UI (futuro)  │
 └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘
        └─────────────────┼───────────────────┘
                  ┌───────▼────────┐
@@ -39,7 +39,8 @@ assim nenhuma lógica fica duplicada.
 |---|---|
 | `src/tyler/` | Biblioteca Python e CLI |
 | `src/tyler/ops/` | Uma operação por módulo (reframe, blur, ...) |
-| `.claude/skills/` | Skills do Claude Code (`/vertical`, `/blur`, ...) |
+| `skills/` | Skills do Claude Code (`/tyler:vertical`, `/tyler:blur`, ...) |
+| `.claude-plugin/` | Manifesto do plugin e do marketplace |
 | `models/` | Modelos de IA baixados (fora do git) |
 | `samples/` | Vídeos de teste (fora do git) |
 | `tests/` | Testes |
@@ -50,6 +51,27 @@ assim nenhuma lógica fica duplicada.
 - [uv](https://docs.astral.sh/uv/) e Python 3.12
 - ffmpeg (`brew install ffmpeg`)
 - deno (`brew install deno`), usado pelo yt-dlp para baixar do YouTube
+
+## Modo conversa
+
+Rode `tyler` sem comando e peça as edições em português, uma atrás da outra:
+
+```
+$ export ANTHROPIC_API_KEY=sk-ant-...
+$ uv run tyler
+você› pega o vira.mp4 e corta do 0:10 ao 0:40
+você› agora deixa vertical
+você› quero ver como ficou
+```
+
+O Claude (`claude-opus-5-5`) entende o pedido e chama as mesmas operações da CLI, com o mesmo painel de progresso.
+Cada passo gera um arquivo novo, e o próximo pedido é aplicado sobre o último resultado. Para ver o resultado, ele
+abre o arquivo no player do Mac. Ctrl+C cancela a operação em andamento sem fechar a conversa; `sair` encerra.
+A área de digitação guarda o histórico entre sessões (↑/↓), e Tab completa nomes de vídeos e imagens da pasta.
+A barra no rodapé mostra o tamanho da conversa, os tokens enviados (↑) e recebidos (↓), quanto veio do cache e o
+custo acumulado. Depois de cada resposta aparece o gasto daquele pedido.
+O código fica em `src/tyler/agent.py`. Para chamar só `tyler` de qualquer pasta, instale com
+`uv tool install --editable .`.
 
 ## Uso
 
@@ -97,7 +119,25 @@ os modelos de IA em uso (inferências e tempo médio) e o comando que está roda
 Para esquentar menos, use `--eco`: o Tyler e o ffmpeg passam a rodar em segundo plano, nos núcleos de eficiência.
 Fica cerca de 3x mais lento.
 
-No Claude Code (aberto na pasta do projeto): `/vertical ~/Movies/video.mp4`, `/blur ~/Movies/rua.mp4`, `/cut ~/Movies/video.mp4 1:30 2:45`, `/watermark ~/Movies/video.mp4 ~/logo.png`, `/download <link>`
+## Plugin do Claude Code
+
+O repositório é também um plugin do Claude Code (e o marketplace dele). Instalado, ele traz as skills
+`/tyler:vertical`, `/tyler:blur`, `/tyler:cut`, `/tyler:watermark` e `/tyler:download`, que funcionam em qualquer pasta:
+
+```bash
+claude plugin marketplace add https://git.gilderlan.com/Gilderlan/tyler.git
+claude plugin install tyler@tyler
+```
+
+Antes, instale uv, ffmpeg e deno (veja Requisitos): o plugin traz o código do Tyler, mas não essas ferramentas.
+A primeira skill que rodar demora mais, porque o `uv` monta o ambiente Python dentro do plugin.
+Para receber versões novas: `claude plugin marketplace update tyler`.
+
+Exemplos: `/tyler:vertical ~/Movies/video.mp4`, `/tyler:blur ~/Movies/rua.mp4`, `/tyler:cut ~/Movies/video.mp4 1:30 2:45`,
+`/tyler:watermark ~/Movies/video.mp4 ~/logo.png`, `/tyler:download <link>`.
+
+Para desenvolver as skills, abra o Claude Code com o plugin carregado direto desta pasta: `claude --plugin-dir .`
+(depois de editar, `/reload-plugins`). Antes de publicar, rode `claude plugin validate .`.
 
 ## Modelos de IA
 
@@ -117,3 +157,7 @@ São baixados automaticamente no primeiro uso.
 - [x] `download` — baixa vídeo ou áudio do YouTube e outros sites
 - [ ] Ações Rápidas no Finder
 - [ ] Interface web
+
+## Licença
+
+[MIT](LICENSE) © 2026 Gilderlan Braz

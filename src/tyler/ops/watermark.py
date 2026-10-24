@@ -9,6 +9,7 @@ from pathlib import Path
 
 import cv2
 
+from tyler import system
 from tyler.report import PlainReporter, Reporter, shell_command
 from tyler.video import default_output, encode_args, probe, run_ffmpeg
 
@@ -40,6 +41,7 @@ def parse_position(text: str) -> str:
 def run(input_path: Path, image: Path, output: Path | None = None, position: str = "bottom-right",
         size: float = 20, opacity: float = 1.0, margin: float = 3, reporter: Reporter | None = None) -> Path:
     """`size` e `margin` são porcentagens do lado menor do vídeo; `opacity` vai de 0 a 1."""
+    system.require(*system.VIDEO_TOOLS)
     position = parse_position(position)
     if not 0 < size <= 100:
         raise InvalidWatermark(f"Tamanho inválido: {size}. Use uma porcentagem entre 1 e 100")

@@ -14,6 +14,7 @@ from pathlib import Path
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
 
+from tyler import system
 from tyler.report import PlainReporter, Reporter, _bytes, shell_command
 
 AUDIO_FORMATS = ("m4a", "mp3")
@@ -26,6 +27,7 @@ VIDEO_STEP = "Baixando vídeo"
 AUDIO_STEP = "Baixando áudio"
 MERGE_STEP = "Juntando faixas"
 TITLE_TEMPLATE = "%(title)s.%(ext)s"
+YOUTUBE = re.compile(r"^https?://([^/]+\.)?(youtube\.com|youtu\.be|youtube-nocookie\.com)(/|$)", re.IGNORECASE)
 
 
 class DownloadFailed(RuntimeError):
@@ -42,6 +44,9 @@ def run(url: str, output: Path | str | None = None, only_audio: bool = False, au
     """
     if audio_format not in AUDIO_FORMATS:
         raise ValueError(f"Formato de áudio inválido: {audio_format}. Use um de: {', '.join(AUDIO_FORMATS)}")
+    system.require("ffmpeg")  # juntar as faixas e converter para mp3
+    if YOUTUBE.match(url):
+        system.require("deno", purpose="baixar do YouTube")  # o yt-dlp resolve o JavaScript do YouTube com ele
     reporter = reporter or PlainReporter()
     progress = _Progress(reporter, audio_format)
     opts = options(output, only_audio, audio_format)

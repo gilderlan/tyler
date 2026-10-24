@@ -1,0 +1,14 @@
+{
+  "name": "tyler",
+  "description": "Marketplace do Tyler, editor de vídeo comandado por IA",
+  "owner": {
+    "name": "Gilderlan Braz"
+  },
+  "plugins": [
+    {
+      "name": "tyler",
+      "source": "./",
+      "description": "Corta, deixa vertical, borra rostos e placas, aplica marca d'água e baixa vídeos."
+    }
+  ]
+}

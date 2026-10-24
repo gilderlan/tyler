@@ -4,7 +4,7 @@ description: Converte um vídeo horizontal para vertical (9:16, Reels/TikTok/Sho
 argument-hint: <vídeo> [auto|center|fit] [LARGURAxALTURA]
 ---
 
-# /vertical
+# /tyler:vertical
 
 Converte o vídeo para vertical usando a CLI do Tyler. Argumentos recebidos: `$ARGUMENTS`
 
@@ -18,7 +18,7 @@ Converte o vídeo para vertical usando a CLI do Tyler. Argumentos recebidos: `$A
 3. Rode a partir da raiz deste projeto (pode levar alguns minutos em vídeos longos; use timeout alto):
 
    ```bash
-   uv run --project "$CLAUDE_PROJECT_DIR" tyler vertical "<vídeo>" --mode <modo> [--size 1080x1920] [-o "<saída>"]
+   uv run --project "${CLAUDE_PLUGIN_ROOT}" tyler vertical "<vídeo>" --mode <modo> [--size 1080x1920] [-o "<saída>"]
    ```
 
 4. A última linha impressa é o caminho do vídeo gerado. Informe-o ao usuário (o original nunca é alterado).

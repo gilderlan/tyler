@@ -11,7 +11,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from tyler import models
+from tyler import models, system
 from tyler.report import FACE_MODEL, GREEN, PlainReporter, Reporter, decoding, draw_boxes, shell_command
 from tyler.video import FrameWriter, VideoInfo, default_output, encode_args, frames, probe, run_ffmpeg
 
@@ -31,6 +31,7 @@ RENDER_STEP = "Gerando vídeo vertical"
 
 def run(input_path: Path, output: Path | None = None, mode: str = "auto", size: tuple[int, int] = (1080, 1920),
         reporter: Reporter | None = None) -> Path:
+    system.require(*system.VIDEO_TOOLS)
     if mode not in MODES:
         raise ValueError(f"Modo inválido: {mode}. Use um de: {', '.join(MODES)}")
     output = output or default_output(input_path, "vertical")
